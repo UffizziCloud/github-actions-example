@@ -1,0 +1,38 @@
+kind: UffizziCluster
+apiVersion: uffizzi.com/v1alpha1
+metadata:
+  name: quickstart
+  namespace: quickstart 
+spec:
+  ingress:
+    class: "nginx"
+    host: 
+    cluster:
+      ingressAnnotations:
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    services:
+    - name: vote
+      namespace: default
+      port: 5000
+      ingressAnnotations:
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+    - name: result
+      namespace: default
+      port: 5001
+      ingressAnnotations:
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+  manifests: |
+    {{ $.Files.Get "k8s-specifications/db-deployment.yaml" | nindent 4}}
+    {{ $.Files.Get "k8s-specifications/redis-deployment.yaml" | nindent 4}}
+    {{ $.Files.Get "k8s-specifications/result-deployment.yaml" | nindent 4}}
+    {{ $.Files.Get "k8s-specifications/vote-deployment.yaml" | nindent 4}}
+    {{ $.Files.Get "k8s-specifications/worker-deployment.yaml" | nindent 4}}
+    {{ $.Files.Get "k8s-specifications/db-service.yaml" | nindent 4}}
+    {{ $.Files.Get "k8s-specifications/redis-service.yaml" | nindent 4}}
+    {{ $.Files.Get "k8s-specifications/result-service.yaml" | nindent 4}}
+    {{ $.Files.Get "k8s-specifications/vote-service.yaml" | nindent 4}}
+
