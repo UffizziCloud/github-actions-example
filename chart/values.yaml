@@ -1,0 +1,29 @@
+# Default values.
+# This is a YAML-formatted file.
+# Declare name/value pairs to be passed into your templates.
+# name: value
+
+# Details about the name and namespace of the UffizziCluster Resource
+metadata:
+  name: example
+  namespace: example
+
+# Host on which the web app will be accessible - Replace abc.xyz.com
+ingress:
+  spec:
+    host: abc.xyz.com
+
+# Service-related values 
+services:
+  vote:
+    port: 5000
+    # CertificateManagerTLS - true or false
+    cmTLS: true
+    # CertificateManagerIssuer - Replace golf-letsencrypt with name of issuer
+    cmIssuer: "golf-letsencrypt"
+  result:
+    port: 5001
+    # CertificateManagerTLS - true or false
+    cmTLS: true
+    # CertificateManagerIssuer - Replace golf-letsencrypt with name of issuer
+    cmIssuer: "golf-letsencrypt"
