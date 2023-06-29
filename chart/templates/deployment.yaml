@@ -1,12 +1,12 @@
 kind: UffizziCluster
 apiVersion: uffizzi.com/v1alpha1
 metadata:
-  name: quickstart
-  namespace: quickstart 
+  name: {{ .Values.metadata.name }}
+  namespace: {{ .Values.metadata.namespace }}
 spec:
   ingress:
     class: "nginx"
-    host: 
+    host: {{ .Values.ingress.spec.host }}
     cluster:
       ingressAnnotations:
         nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
@@ -15,24 +15,39 @@ spec:
     services:
     - name: vote
       namespace: default
-      port: 5000
+      port: {{ .Values.services.vote.port }}
+      certManagerTLSEnabled: {{ .Values.services.vote.cmTLS }}
       ingressAnnotations:
         nginx.ingress.kubernetes.io/ssl-redirect: "true"
         ingress.kubernetes.io/force-ssl-redirect: "true"
+        {{- if .Values.services.vote.cmTLS }}
+        cert-manager.io/cluster-issuer: {{ .Values.services.vote.cmIssuer }}
+        {{- end }}
     - name: result
       namespace: default
-      port: 5001
+      port: {{ .Values.services.result.port }}
+      certManagerTLSEnabled: {{ .Values.services.result.cmTLS }}
       ingressAnnotations:
+        {{- if .Values.services.result.cmTLS }}
+        cert-manager.io/cluster-issuer: {{ .Values.services.result.cmIssuer }}
+        {{- end }}
         nginx.ingress.kubernetes.io/ssl-redirect: "true"
         ingress.kubernetes.io/force-ssl-redirect: "true"
   manifests: |
-    {{ $.Files.Get "k8s-specifications/db-deployment.yaml" | nindent 4}}
-    {{ $.Files.Get "k8s-specifications/redis-deployment.yaml" | nindent 4}}
-    {{ $.Files.Get "k8s-specifications/result-deployment.yaml" | nindent 4}}
-    {{ $.Files.Get "k8s-specifications/vote-deployment.yaml" | nindent 4}}
-    {{ $.Files.Get "k8s-specifications/worker-deployment.yaml" | nindent 4}}
-    {{ $.Files.Get "k8s-specifications/db-service.yaml" | nindent 4}}
-    {{ $.Files.Get "k8s-specifications/redis-service.yaml" | nindent 4}}
-    {{ $.Files.Get "k8s-specifications/result-service.yaml" | nindent 4}}
-    {{ $.Files.Get "k8s-specifications/vote-service.yaml" | nindent 4}}
-
+    {{- $.Files.Get "manifests/db-deployment.yaml" | nindent 4}}
+    ---
+    {{- $.Files.Get "manifests/redis-deployment.yaml" | nindent 4}}
+    ---
+    {{- $.Files.Get "manifests/result-deployment.yaml" | nindent 4}}
+    ---
+    {{- $.Files.Get "manifests/vote-deployment.yaml" | nindent 4}}
+    ---
+    {{- $.Files.Get "manifests/worker-deployment.yaml" | nindent 4}}
+    ---
+    {{- $.Files.Get "manifests/db-service.yaml" | nindent 4}}
+    ---
+    {{- $.Files.Get "manifests/redis-service.yaml" | nindent 4}}
+    ---
+    {{- $.Files.Get "manifests/result-service.yaml" | nindent 4}}
+    ---
+    {{- $.Files.Get "manifests/vote-service.yaml" | nindent 4}}
