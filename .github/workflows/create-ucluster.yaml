@@ -12,7 +12,7 @@ jobs:
     name: testing ucluster creation via action
     runs-on: ubuntu-latest
     steps:
-      - name: test action from another repo
+      - name: cluster-create
         uses: UffizziCloud/cluster-action@main
         with:
           server: https://pr-1074-deployment-29862-uffizzi-platform.app.uffizzi.com/
@@ -23,7 +23,9 @@ jobs:
 
       - name: apply kube manifests
         run: |
-          kubectl apply -f manifests/ --kubeconfig ./kubeconfig
+          #kubectl apply -f manifests/ --kubeconfig ./kubeconfig
+          echo "${{ steps.cluster-action.outputs.kubeconfig }}"
+          kubectl apply -f manifests/ --kubeconfig "${{ steps.cluster-create.outputs.kubeconfig }}"
 
   # uffizzi:
   #   name: Uffizzi
