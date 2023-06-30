@@ -20,7 +20,7 @@ jobs:
         env:
           UFFIZZI_SERVER: https://pr-1074-deployment-29388-uffizzi-platform.app.uffizzi.com/
           UFFIZZI_USER: admin@uffizzi.com
-          UFFIZZI_PASSWORD: ${{ secrets.uffizzi-password }}
+          UFFIZZI_PASSWORD: ${{ secrets.uffizzi_password }}
           UFFIZZI_PROJECT: default
           UFFIZZI_IMAGE: uffizzi/cli:pr-224
           UFFIZZI_CLUSTER: pr-${{ github.event.number }}
