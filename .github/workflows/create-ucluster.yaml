@@ -23,7 +23,8 @@ jobs:
           UFFIZZI_PASSWORD: ${{ secrets.uffizzi_password }}
           UFFIZZI_PROJECT: default
           UFFIZZI_IMAGE: uffizzi/cli:pr-224
-          UFFIZZI_CLUSTER: pr-${{ github.event.number }}
+#           UFFIZZI_CLUSTER: pr-${{ github.event.number }}
+          UFFIZZI_CLUSTER: pr-2098
         run: |
           # Identify if a Cluster for this PR exists.
           if docker run --rm \
