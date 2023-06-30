@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: cluster-create
+        id: cluster-create
         uses: UffizziCloud/cluster-action@main
         with:
           server: https://pr-1074-deployment-29862-uffizzi-platform.app.uffizzi.com/
@@ -24,6 +25,7 @@ jobs:
       - name: apply kube manifests
         run: |
           #kubectl apply -f manifests/ --kubeconfig ./kubeconfig
+          echo "Here!"
           echo "${{ steps.cluster-action.outputs.kubeconfig }}"
           kubectl apply -f manifests/ --kubeconfig "${{ steps.cluster-create.outputs.kubeconfig }}"
 
