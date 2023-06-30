@@ -15,7 +15,7 @@ jobs:
       - name: test action from another repo
         uses: UffizziCloud/cluster-action@main
         with:
-          server: https://pr-1074-deployment-29388-uffizzi-platform.app.uffizzi.com/
+          server: https://pr-1074-deployment-29862-uffizzi-platform.app.uffizzi.com/
           username: admin@uffizzi.com
           password: ${{ secrets.uffizzi_password }}
           project: default
