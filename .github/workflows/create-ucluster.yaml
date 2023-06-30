@@ -20,6 +20,11 @@ jobs:
           password: ${{ secrets.uffizzi_password }}
           project: default
           cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
+
+      - name: apply kube manifests
+        run: |
+          kubectl apply -f manifests/ --kubeconfig ./kubeconfig
+
   # uffizzi:
   #   name: Uffizzi
   #   runs-on: ubuntu-latest
