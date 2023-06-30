@@ -1,6 +1,10 @@
 name: Uffizzi Cluster Quickstart
 
 on:
+  push:
+    branches:
+      - main
+
   pull_request:
     types: [opened,reopened,synchronize,closed]
 
@@ -23,7 +27,7 @@ jobs:
           UFFIZZI_PASSWORD: ${{ secrets.uffizzi_password }}
           UFFIZZI_PROJECT: default
           UFFIZZI_IMAGE: uffizzi/cli:pr-224
-          UFFIZZI_CLUSTER: pr-${{ github.event.number }}
+          UFFIZZI_CLUSTER: pr-test12345 #pr-${{ github.event.number }}
         run: |
           # Identify if a Cluster for this PR exists.
           if docker run --rm \
