@@ -37,6 +37,7 @@ jobs:
             docker run --rm --env UFFIZZI_SERVER=${UFFIZZI_SERVER} \
               --env UFFIZZI_USER=${UFFIZZI_USER} \
               --env UFFIZZI_PASSWORD=${UFFIZZI_PASSWORD} \
+              --env UFFIZZI_PROJECT=${UFFIZZI_PROJECT} \
               --mount type=bind,source="$(pwd)",target=/home \
             ${UFFIZZI_IMAGE} cluster update-kubeconfig \
               --name ${UFFIZZI_CLUSTER} --kubeconfig /home/kubeconfig
@@ -45,6 +46,7 @@ jobs:
             docker run --rm --env UFFIZZI_SERVER=${UFFIZZI_SERVER} \
               --env UFFIZZI_USER=${UFFIZZI_USER} \
               --env UFFIZZI_PASSWORD=${UFFIZZI_PASSWORD} \
+              --env UFFIZZI_PROJECT=${UFFIZZI_PROJECT} \
               --mount type=bind,source="$(pwd)",target=/home \
             ${UFFIZZI_IMAGE} cluster create \
               --name ${UFFIZZI_CLUSTER} --kubeconfig /home/kubeconfig
