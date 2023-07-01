@@ -20,14 +20,14 @@ jobs:
           username: admin@uffizzi.com
           password: ${{ secrets.uffizzi_password }}
           project: default
-          cluster-name: pr-test-xx
+          cluster-name: pr-test-1x
           #cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
 
       - name: get kubeconfig
-        - uses: actions/download-artifact@v3
-          with:
-            name: kubeconfig
-            path: ./
+        uses: actions/download-artifact@v3
+        with:
+          name: kubeconfig
+          path: ./
 
       - name: apply kube manifests
         run: |
