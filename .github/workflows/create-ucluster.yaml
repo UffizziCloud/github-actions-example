@@ -25,7 +25,7 @@ jobs:
 
       - name: apply kube manifests
         run: |
-          cat kubeconfig
+          cat /home/kubeconfig
           ls /home
           ls ${{ github.workspace }}/ 
           kubectl apply -f manifests/ --kubeconfig /home/kubeconfig
