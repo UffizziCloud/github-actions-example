@@ -1,4 +1,4 @@
-name: Uffizzi Cluster Quickstart
+ name: Uffizzi Cluster Quickstart
 
 on:
   pull_request:
@@ -20,10 +20,12 @@ jobs:
           username: admin@uffizzi.com
           password: ${{ secrets.uffizzi_password }}
           project: default
-          cluster-name: pr-test-abc
+          cluster-name: pr-test-aaa
           #cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
 
       - name: apply kube manifests
         run: |
           cat kubeconfig
-          kubectl apply -f manifests/ --kubeconfig kubeconfig
+          ls /home
+          ls ${{ github.workspace }}/ 
+          kubectl apply -f manifests/ --kubeconfig /home/kubeconfig
