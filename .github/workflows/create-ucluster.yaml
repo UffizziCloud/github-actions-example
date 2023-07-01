@@ -12,6 +12,9 @@ jobs:
     name: testing ucluster creation via action
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
       - name: cluster-create
         id: cluster-create
         uses: UffizziCloud/cluster-action@main
@@ -24,6 +27,7 @@ jobs:
 
       - name: apply kube manifests
         run: |
-          echo "${pwd}"
+          echo "$(pwd)"
           echo "${{ github.workspace }}"
+          ls
           kubectl apply -f manifests/ --kubeconfig kubeconfig
