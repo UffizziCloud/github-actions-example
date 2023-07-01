@@ -24,4 +24,6 @@ jobs:
 
       - name: apply kube manifests
         run: |
-          kubectl apply -f manifests/ --kubeconfig /home/kubeconfig
+          echo "${pwd}"
+          echo "${{ github.workspace }}"
+          kubectl apply -f manifests/ --kubeconfig kubeconfig
