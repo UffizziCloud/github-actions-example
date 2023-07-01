@@ -20,8 +20,7 @@ jobs:
           username: admin@uffizzi.com
           password: ${{ secrets.uffizzi_password }}
           project: default
-          cluster-name: pr-test-abc
-          #cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
+          cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
 
       - name: apply kube manifests
         run: |
