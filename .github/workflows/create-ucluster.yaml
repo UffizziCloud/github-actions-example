@@ -20,7 +20,7 @@ jobs:
           username: admin@uffizzi.com
           password: ${{ secrets.uffizzi_password }}
           project: default
-          cluster-name: pr-test-4x
+          cluster-name: pr-test-xy
           #cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
 
       - name: get kubeconfig
