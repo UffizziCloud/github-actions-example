@@ -20,19 +20,16 @@ jobs:
           username: admin@uffizzi.com
           password: ${{ secrets.uffizzi_password }}
           project: default
-          cluster-name: pr-test-xyz
+          cluster-name: pr-test-abc
           #cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
 
-      # - name: get kubeconfig
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: kubeconfig
-      #     path: kubeconfig
+      - name: get kubeconfig
+        uses: actions/download-artifact@v3
+        with:
+          name: kubeconfig
+          path: kubeconfig
 
       - name: apply kube manifests
         run: |
-          echo "Here!"
-          kubeconfig_content="${{ steps.cluster-create.outputs.kubeconfig }}"
-          echo $kubeconfig_content
-          echo $kubeconfig_content > kubeconfig
+          cat kubeconfig
           kubectl apply -f manifests/ --kubeconfig kubeconfig
