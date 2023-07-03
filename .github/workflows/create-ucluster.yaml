@@ -8,9 +8,94 @@ permissions:
   id-token: write
 
 jobs:
+  build-vote:
+    name: Build and Push `vote`
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v3
+      - name: Generate UUID image name
+        id: uuid
+        run: echo "UUID_VOTE=$(uuidgen)" >> $GITHUB_ENV
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          # An anonymous, emphemeral registry built on ttl.sh
+          images: registry.uffizzi.com/${{ env.UUID_VOTE }}
+          tags: type=raw,value=24h
+      - name: Build and Push Image to Uffizzi Ephemeral Registry
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          context: ./vote
+
+  build-worker:
+    name: Build and Push `worker`
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v3
+      - name: Generate UUID image name
+        id: uuid
+        run: echo "UUID_WORKER=$(uuidgen)" >> $GITHUB_ENV
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          # An anonymous, emphemeral registry built on ttl.sh
+          images: registry.uffizzi.com/${{ env.UUID_WORKER }}
+          tags: type=raw,value=24h
+      - name: Build and Push Image to Uffizzi Ephemeral Registry
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          context: ./worker
+
+  build-result:
+    name: Build and Push `result`
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v3
+      - name: Generate UUID image name
+        id: uuid
+        run: echo "UUID_RESULT=$(uuidgen)" >> $GITHUB_ENV
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          # An anonymous, emphemeral registry built on ttl.sh
+          images: registry.uffizzi.com/${{ env.UUID_RESULT }}
+          tags: type=raw,value=24h
+      - name: Build and Push Image to Uffizzi Ephemeral Registry
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          context: ./result
+
   oof-take-it-easy:
     name: testing ucluster creation via action
     runs-on: ubuntu-latest
+    needs:
+      - build-vote
+      - build-worker
+      - build-result
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,12 +104,26 @@ jobs:
         id: cluster-create
         uses: UffizziCloud/cluster-action@main
         with:
-          server: https://pr-1074-deployment-29862-uffizzi-platform.app.uffizzi.com/
+          server: https://pr-1100-deployment-29999-uffizzi-platform.app.uffizzi.com/ 
           username: admin@uffizzi.com
           password: ${{ secrets.uffizzi_password }}
           project: default
           cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
+          image: uffizzi/cli:pr-224
 
-      - name: apply kube manifests
+      - name: Kustomize and apply
         run: |
-          kubectl apply -f manifests/ --kubeconfig kubeconfig
+          echo ${{ needs.build-vote.outputs.tags }}
+          echo ${{ needs.build-worker.outputs.tags }}
+          echo ${{ needs.build-result.outputs.tags }}
+          echo $(pwd)
+
+          kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
+          kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
+          kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
+
+          kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
+
+      # - name: apply kube manifests
+      #   run: |
+      #     kubectl apply -f manifests/ --kubeconfig kubeconfig
