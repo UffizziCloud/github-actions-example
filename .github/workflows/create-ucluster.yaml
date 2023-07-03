@@ -109,7 +109,7 @@ jobs:
           password: ${{ secrets.uffizzi_password }}
           project: default
           cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
-          image: uffizzi/cli:pr-239
+          image: uffizzi/cli:pr-224
 
       - name: apply kube manifests
         run: |
