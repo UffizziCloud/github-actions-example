@@ -11,6 +11,7 @@ resources:
   - manifests/vote-service.yaml
   - manifests/worker-deployment.yaml
 
+
 images:
 - name: result-image
   newName: dockersamples/examplevotingapp_result
