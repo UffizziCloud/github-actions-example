@@ -102,7 +102,7 @@ jobs:
 
       - name: cluster-create
         id: cluster-create
-        uses: UffizziCloud/cluster-action@main
+        uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@main
         with:
           server: https://pr-1100-deployment-29999-uffizzi-platform.app.uffizzi.com/ 
           username: admin@uffizzi.com
