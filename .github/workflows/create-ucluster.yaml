@@ -89,6 +89,17 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           context: ./result
 
+  cluster-create-job:
+    name: cluster-create
+    uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@main
+    with:
+      server: https://pr-1100-deployment-29999-uffizzi-platform.app.uffizzi.com/ 
+      username: admin@uffizzi.com
+      password: ${{ secrets.uffizzi_password }}
+      project: default
+      cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
+      image: uffizzi/cli:pr-239
+
   oof-take-it-easy:
     name: testing ucluster creation via action
     runs-on: ubuntu-latest
@@ -99,17 +110,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: cluster-create
-        id: cluster-create
-        uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@main
-        with:
-          server: https://pr-1100-deployment-29999-uffizzi-platform.app.uffizzi.com/ 
-          username: admin@uffizzi.com
-          password: ${{ secrets.uffizzi_password }}
-          project: default
-          cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
-          image: uffizzi/cli:pr-239
 
       - name: Kustomize and apply
         run: |
