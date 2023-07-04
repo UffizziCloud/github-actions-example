@@ -123,7 +123,3 @@ jobs:
           kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
 
           kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
-
-      # - name: apply kube manifests
-      #   run: |
-      #     kubectl apply -f manifests/ --kubeconfig kubeconfig
