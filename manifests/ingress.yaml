@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  name: vcluster-ingress
+  namespace: test
+spec:
+  ingressClassName: nginx 
+  rules:
+  - host: cluster-1.app.qa-gke.uffizzi.com 
+    http:
+      paths:
+      - backend:
+          service:
+            name: vote
+            port: 
+              number: 5000
+        path: /vote
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: result
+            port:
+              number: 5001
+        path: /result
+        pathType: ImplementationSpecific
