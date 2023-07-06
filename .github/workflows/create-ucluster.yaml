@@ -116,3 +116,13 @@ jobs:
           cat kubeconfig
 
           kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
+
+          kubectl create ingress vote \
+            --class=nginx \
+            --rule="${UFFIZZI_CLUSTER}.quickstart.app.qa-gke.uffizzi.com/vote=vote:5000" \
+            --kubeconfig ./kubeconfig
+
+          kubectl create ingress result \
+            --class=nginx \
+            --rule="${UFFIZZI_CLUSTER}.quickstart.app.qa-gke.uffizzi.com/result=result:5001" \
+            --kubeconfig ./kubeconfig
