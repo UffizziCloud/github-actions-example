@@ -149,4 +149,5 @@ jobs:
         id: cluster-delete
         uses: UffizziCloud/cluster-action@reusable
         with:
+          action: delete
           cluster-name: pr-${{ github.event.number }}
