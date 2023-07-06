@@ -90,6 +90,7 @@ jobs:
           context: ./result
 
   cluster-setup:
+    runs-on: ubuntu-latest
     needs:
       - build-vote
       - build-worker
