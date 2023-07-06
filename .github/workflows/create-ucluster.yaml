@@ -104,7 +104,7 @@ jobs:
         id: cluster-create
         uses: UffizziCloud/cluster-action@main
         with:
-          server: https://pr-1100-deployment-29999-uffizzi-platform.app.uffizzi.com/ 
+          server: https://app.uffizzi.com 
           # username: admin@uffizzi.com
           # password: ${{ secrets.uffizzi_password }}
           # project: default
