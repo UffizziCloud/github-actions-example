@@ -108,23 +108,30 @@ jobs:
 
       - name: Kustomize and apply
         run: |
-          echo "Here!"
           kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
           kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
           kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
 
           cat kubeconfig
 
-          echo "Here!!"
           kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
 
-          echo "Here!!!"
-          kubectl create ingress vote \
-            --class=nginx \
-            --rule="pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com/*=vote:5000" \
-            --kubeconfig kubeconfig
+          if kubectl get ingress vote --kubeconfig kubeconfig >/dev/null 2>&1; then
+            echo "Ingress 'vote' already exists"
 
-          kubectl create ingress result \
-            --class=nginx \
-            --rule="pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com/*=result:5001" \
-            --kubeconfig kubeconfig
+          else
+            kubectl create ingress vote \
+              --class=nginx \
+              --rule="pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com/*=vote:5000" \
+              --kubeconfig kubeconfig
+          fi
+
+          if kubectl get ingress result --kubeconfig kubeconfig >/dev/null 2>&1; then
+            echo "Ingress 'result' already exists"
+
+          else     
+            kubectl create ingress result \
+              --class=nginx \
+              --rule="pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com/*=result:5001" \
+              --kubeconfig kubeconfig
+          fi
