@@ -18,7 +18,16 @@ Select **Actions**, then select **I understand my workflows, go ahead and enable
 
 If you try to open a PR for `UffizziCloud/main` ← `your-account/try-uffizzi`, the Actions workflow will not run in this example.
 
-That's it! This will kick off a GitHub Actions workflow and post the Preview Environment URL as a comment to your PR issue.
+### 4. Open the completed action summary page
+
+Under the Actions section of the forked repository, open up the latest completed action. Within the completed action, open up the summary section
+
+### 5. Access the vote and result endpoints
+
+Copy and paste the vote and result endpoints within the action summary
+
+<img src="https://github.com/UffizziCloud/quickstart-k8s/blob/readme/images/quickstartss.png" width="800">
+
 ___
 ## What to expect
 
