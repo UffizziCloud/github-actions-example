@@ -113,4 +113,6 @@ jobs:
           kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
           kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
 
+          cat kubeconfig
+
           kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
