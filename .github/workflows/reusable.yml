@@ -10,7 +10,6 @@ permissions:
 jobs:
   cluster-setup:
     name: Setup ucluster
-    runs-on: ubuntu-latest
     uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@reusable
     with:
       cluster-name: pr-${{ github.event.number }}
