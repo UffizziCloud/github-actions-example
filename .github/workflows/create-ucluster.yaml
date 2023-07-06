@@ -120,7 +120,7 @@ jobs:
           kubectl create ingress vote \
             --class=nginx \
             --rule="pr-21.app.qa-gke.uffizzi.com/vote=vote:5000" \
-            --kubeconfig ./test-kubeconf
+            --kubeconfig kubeconfig
 
           # kubectl create ingress result \
           #   --class=nginx \
