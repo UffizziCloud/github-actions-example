@@ -102,7 +102,7 @@ jobs:
 
       - name: cluster-create
         id: cluster-create
-        uses: UffizziCloud/cluster-action@mostlydevops
+        uses: UffizziCloud/cluster-action@composite-new
         with:
           server: https://app.uffizzi.com 
           # username: admin@uffizzi.com
@@ -113,10 +113,10 @@ jobs:
 
       - name: Kustomize and apply
         run: |
-          echo ${{ needs.build-vote.outputs.tags }}
-          echo ${{ needs.build-worker.outputs.tags }}
-          echo ${{ needs.build-result.outputs.tags }}
-          echo $(pwd)
+          # echo ${{ needs.build-vote.outputs.tags }}
+          # echo ${{ needs.build-worker.outputs.tags }}
+          # echo ${{ needs.build-result.outputs.tags }}
+          # echo $(pwd)
 
           kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
           kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
