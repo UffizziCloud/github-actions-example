@@ -102,24 +102,17 @@ jobs:
 
       - name: cluster-create
         id: cluster-create
-        uses: UffizziCloud/cluster-action@main
+        uses: UffizziCloud/cluster-action@mostlydevops
         with:
-          server: https://pr-1100-deployment-29999-uffizzi-platform.app.uffizzi.com/ 
-          username: admin@uffizzi.com
-          password: ${{ secrets.uffizzi_password }}
-          project: default
-          cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
-          image: uffizzi/cli:pr-224
+          cluster-name: pr-${{ github.event.number }}
 
       - name: Kustomize and apply
         run: |
-          echo ${{ needs.build-vote.outputs.tags }}
-          echo ${{ needs.build-worker.outputs.tags }}
-          echo ${{ needs.build-result.outputs.tags }}
-          echo $(pwd)
 
           kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
           kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
           kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
+
+          cat kubeconfig
 
           kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
