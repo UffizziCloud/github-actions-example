@@ -104,17 +104,10 @@ jobs:
         id: cluster-create
         uses: UffizziCloud/cluster-action@mostlydevops
         with:
-          # username: admin@uffizzi.com
-          # password: ${{ secrets.uffizzi_password }}
-          # project: default
           cluster-name: pr-${{ github.event.number }}
 
       - name: Kustomize and apply
         run: |
-          # echo ${{ needs.build-vote.outputs.tags }}
-          # echo ${{ needs.build-worker.outputs.tags }}
-          # echo ${{ needs.build-result.outputs.tags }}
-          # echo $(pwd)
 
           kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
           kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
