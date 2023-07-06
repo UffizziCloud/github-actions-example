@@ -7,17 +7,7 @@ on:
 permissions:
   id-token: write
 
-jobs:
-  cluster-setup:
-    name: Setup ucluster
-    uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@reusable
-    with:
-      cluster-name: pr-${{ github.event.number }}
-    permissions:
-      contents: read
-      pull-requests: write
-      id-token: write
-      
+jobs:      
   build-vote:
     name: Build and Push `vote`
     runs-on: ubuntu-latest
@@ -98,12 +88,24 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           context: ./result
-    
-  apply-manifests: 
+
+  cluster-setup:
     needs:
       - build-vote
       - build-worker
       - build-result
+    name: Setup ucluster
+    uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@reusable
+    with:
+      cluster-name: pr-${{ github.event.number }}
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+
+  apply-manifests: 
+    needs:
+      - cluster-setup
     steps:
       - name: Checkout
         uses: actions/checkout@v3
