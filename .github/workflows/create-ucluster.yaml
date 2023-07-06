@@ -105,9 +105,9 @@ jobs:
         uses: UffizziCloud/cluster-action@main
         with:
           server: https://pr-1100-deployment-29999-uffizzi-platform.app.uffizzi.com/ 
-          username: admin@uffizzi.com
-          password: ${{ secrets.uffizzi_password }}
-          project: default
+          # username: admin@uffizzi.com
+          # password: ${{ secrets.uffizzi_password }}
+          # project: default
           cluster-name: pr-${{ github.event.repository.name }}-${{ github.event.number }}
           image: uffizzi/cli:pr-239
 
