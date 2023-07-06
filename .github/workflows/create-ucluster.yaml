@@ -119,10 +119,10 @@ jobs:
 
           kubectl create ingress vote \
             --class=nginx \
-            --rule="${UFFIZZI_CLUSTER}.quickstart.app.qa-gke.uffizzi.com/vote=vote:5000" \
+            --rule="abc.quickstart.app.qa-gke.uffizzi.com/vote=vote:5000" \
             --kubeconfig ./kubeconfig
 
           kubectl create ingress result \
             --class=nginx \
-            --rule="${UFFIZZI_CLUSTER}.quickstart.app.qa-gke.uffizzi.com/result=result:5001" \
+            --rule="abc.quickstart.app.qa-gke.uffizzi.com/result=result:5001" \
             --kubeconfig ./kubeconfig
