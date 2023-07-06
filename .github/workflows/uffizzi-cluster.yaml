@@ -102,7 +102,7 @@ jobs:
 
       - name: cluster-create
         id: cluster-create
-        uses: UffizziCloud/cluster-action@reusable
+        uses: UffizziCloud/cluster-action@main
         with:
           cluster-name: pr-${{ github.event.number }}
 
@@ -147,7 +147,7 @@ jobs:
     steps:
       - name: cluster-delete
         id: cluster-delete
-        uses: UffizziCloud/cluster-action@reusable
+        uses: UffizziCloud/cluster-action@main
         with:
           action: delete
           cluster-name: pr-${{ github.event.number }}
