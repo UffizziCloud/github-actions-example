@@ -102,7 +102,7 @@ jobs:
 
       - name: cluster-create
         id: cluster-create
-        uses: UffizziCloud/cluster-action@composite-new
+        uses: UffizziCloud/cluster-action@mostlydevops
         with:
           server: https://app.uffizzi.com 
           # username: admin@uffizzi.com
