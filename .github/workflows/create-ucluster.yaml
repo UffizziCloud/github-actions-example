@@ -119,10 +119,10 @@ jobs:
 
           kubectl create ingress vote \
             --class=nginx \
-            --rule="pr-${{ github.event.number }}.app.qa-gke.uffizzi.com/*=vote:5000" \
+            --rule="pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com/*=vote:5000" \
             --kubeconfig kubeconfig
 
           kubectl create ingress result \
             --class=nginx \
-            --rule="pr-${{ github.event.number }}.app.qa-gke.uffizzi.com/*=result:5001" \
+            --rule="pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com/*=result:5001" \
             --kubeconfig kubeconfig
