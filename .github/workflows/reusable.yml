@@ -90,12 +90,19 @@ jobs:
           context: ./result
 
   cluster-setup:
-    name: Setup ucluster
-    uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@main
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
       id-token: write
+    steps:
+      - name: Setup ucluster
+        uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@main
+      - name: Upload kubeconfig
+        uses: actions/upload-artifact@v3
+        with:
+          name: kubeconfig
+          path: kubeconfig        
 
   apply-manifests: 
     runs-on: ubuntu-latest
@@ -107,6 +114,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: kubeconfig
 
       - name: Kustomize and apply
         run: |
