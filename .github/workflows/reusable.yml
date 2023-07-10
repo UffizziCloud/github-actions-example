@@ -103,6 +103,7 @@ jobs:
       - build-vote
       - build-worker
       - build-result
+      - cluster-setup
     steps:
       - name: Checkout
         uses: actions/checkout@v3
