@@ -90,10 +90,6 @@ jobs:
           context: ./result
 
   cluster-setup:
-    needs:
-      - build-vote
-      - build-worker
-      - build-result
     name: Setup ucluster
     uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@main
     permissions:
@@ -104,10 +100,18 @@ jobs:
   apply-manifests: 
     runs-on: ubuntu-latest
     needs:
+      - build-vote
+      - build-worker
+      - build-result
       - cluster-setup
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: my-artifact
 
       - name: Kustomize and apply
         run: |
