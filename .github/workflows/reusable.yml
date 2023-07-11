@@ -7,7 +7,8 @@ on:
 permissions:
   id-token: write
 
-jobs:      
+jobs:
+  # Job to build-push vote image
   build-vote:
     name: Build and Push `vote`
     runs-on: ubuntu-latest
@@ -35,6 +36,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           context: ./vote
 
+  # Job to build-push worker image
   build-worker:
     name: Build and Push `worker`
     runs-on: ubuntu-latest
@@ -62,6 +64,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           context: ./worker
 
+  # Job to build-push result image
   build-result:
     name: Build and Push `result`
     runs-on: ubuntu-latest
@@ -89,6 +92,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           context: ./result
 
+  # Job to create a uCluster
   cluster-setup:
     name: Setup ucluster
     uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@main
@@ -97,6 +101,7 @@ jobs:
       pull-requests: write
       id-token: write
 
+  # Job to apply manifests to deploy the example-voting-app
   apply-manifests: 
     runs-on: ubuntu-latest
     needs:
@@ -119,8 +124,6 @@ jobs:
           kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
           kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
           kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
-
-          cat kubeconfig
 
           kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
 
