@@ -66,3 +66,4 @@ The application defined by this repo allows users to vote for dogs or cats and s
 * **worker** - A [.NET Core](/worker/src/Worker) worker that consumes votes and stores them in...
 * **db** - A [PostgreSQL](https://hub.docker.com/_/postgres/) database backed by a Docker volume
 * **result-app** - A [Node.js](/result) web app that shows the results of the voting in real time
+
