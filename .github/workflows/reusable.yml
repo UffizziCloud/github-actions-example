@@ -95,7 +95,7 @@ jobs:
   # Job to create a uCluster
   cluster-setup:
     name: Setup ucluster
-    uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@use-binary
+    uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@main
     permissions:
       contents: read
       pull-requests: write
