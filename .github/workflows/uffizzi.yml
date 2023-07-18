@@ -185,8 +185,10 @@ jobs:
 
           1. Download and install the Uffizzi CLI
           2. Login to Uffizzi: `uffizzi login`
-          3. Update your kubeconfig: `uffizzi cluster update-kubeconfig --name pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]` , replacing `[KUBECONFIG]` with the path to your kubeconfig file.
-          After updating your kubeconfig, you can manage your cluster with `kubectl`
+          3a. Update your kubeconfig: `uffizzi cluster update-kubeconfig --name pr-${{ github.event.pull_request.number }}`. This command will update your local kubeconfig. 
+          If you want to provide an alternate location follow 3b (the next step) instead.
+          3b. Update your kubeconfig: `uffizzi cluster update-kubeconfig --name pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]`, replacing `[KUBECONFIG]` with the path to your kubeconfig file.
+          After updating your kubeconfig, you can manage your cluster with `kubectl`.
 
           Access the vote endpoint at https://pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com
           Access the result endpoint at https://pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com
