@@ -102,6 +102,10 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      if: ${{ github.event.action != 'closed' }}
+      uses: actions/checkout@v3
+      
     # Create/Update comment with action deployment status
     - name: Create or Update Comment with Deployment Notification
       id: notification
@@ -163,10 +167,6 @@ jobs:
         body: |
           Uffizzi Cluster `pr-${{ github.event.pull_request.number }}` was deleted.
         edit-mode: replace
-
-    - name: Checkout
-      if: ${{ github.event.action != 'closed' }}
-      uses: actions/checkout@v3
 
     - name: Kustomize and apply
       if: ${{ github.event.action != 'closed' }}
