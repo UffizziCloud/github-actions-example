@@ -174,7 +174,7 @@ jobs:
         kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
         kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
         kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
-
+        echo "`pwd`"
         kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
 
         if kubectl get ingress vote-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
