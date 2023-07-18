@@ -160,7 +160,7 @@ jobs:
           After updating your kubeconfig, you can manage your cluster with `kubectl`
         edit-mode: replace
 
-    - if: ${{ github.event_name != 'pull_request' || github.event.action == 'closed' }}
+    - if: ${{ github.event.action == 'closed' }}
       name: Delete ucluster
       uses: UffizziCloud/cluster-action@main
       with:
@@ -170,7 +170,7 @@ jobs:
 
     - name: Update Comment with Deletion
       uses: peter-evans/create-or-update-comment@v2
-      if: ${{ github.event_name != 'pull_request' || github.event.action == 'closed' }}
+      if: ${{ github.event.action == 'closed' }}
       with:
         comment-id: ${{ steps.find-comment.outputs.comment-id }}
         issue-number: ${{ env.PR_NUMBER }}
