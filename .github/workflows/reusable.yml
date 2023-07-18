@@ -93,7 +93,7 @@ jobs:
           context: ./result
 
   uffizzi-cluster: 
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
     # Create/Update comment with action deployment status
