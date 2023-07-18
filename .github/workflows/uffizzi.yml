@@ -129,7 +129,8 @@ jobs:
 
           :gear: Updating now by workflow run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
 
-          ${{ inputs.description }}
+          Download the Uffizzi CLI to interact with the upcoming virtual cluster
+          https://docs.uffizzi.com/install
         edit-mode: replace
   
     - if: ${{ github.event.action != 'closed' }}
@@ -183,7 +184,7 @@ jobs:
           Your cluster `pr-${{ github.event.pull_request.number }}` was successfully created. Learn more about [Uffizzi virtual clusters](https://docs.uffizzi.com/virtual-clusters)
           To connect to this cluster, follow these steps:
 
-          1. Download and install the Uffizzi CLI
+          1. Download and install the Uffizzi CLI from https://docs.uffizzi.com/install
           2. Login to Uffizzi: `uffizzi login`
           3a. Update your kubeconfig: `uffizzi cluster update-kubeconfig --name pr-${{ github.event.pull_request.number }}`. This command will update your local kubeconfig. 
           If you want to provide an alternate location follow 3b (the next step) instead.
