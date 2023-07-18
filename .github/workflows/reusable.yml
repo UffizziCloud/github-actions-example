@@ -95,6 +95,10 @@ jobs:
           context: ./result
 
   uffizzi-cluster: 
+    needs:
+    - build-vote
+    - build-worker
+    - build-result
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
@@ -160,52 +164,39 @@ jobs:
           Uffizzi Cluster `pr-${{ github.event.pull_request.number }}` was deleted.
         edit-mode: replace
 
-  # Job to apply manifests to deploy the example-voting-app
-  apply-manifests: 
-    if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
-    runs-on: ubuntu-latest
-    needs:
-      - build-vote
-      - build-worker
-      - build-result
-      - uffizzi-cluster
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    - name: Checkout
+      if: ${{ github.event.action != 'closed' }}
+      uses: actions/checkout@v3
 
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: my-artifact
+    - name: Kustomize and apply
+      if: ${{ github.event.action != 'closed' }}
+      run: |
+        kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
+        kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
+        kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
 
-      - name: Kustomize and apply
-        run: |
+        kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
 
-          kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
-          kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
-          kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
+        if kubectl get ingress vote-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
+          echo "Ingress vote-${{ github.event.number }} already exists"
 
-          kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
+        else
+          kubectl create ingress vote-${{ github.event.number }} \
+            --class=nginx \
+            --rule="pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com/*=vote:5000" \
+            --kubeconfig kubeconfig
+        fi
 
-          if kubectl get ingress vote-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
-            echo "Ingress vote-${{ github.event.number }} already exists"
+        if kubectl get ingress result-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
+          echo "Ingress result-${{ github.event.number }} already exists"
 
-          else
-            kubectl create ingress vote-${{ github.event.number }} \
-              --class=nginx \
-              --rule="pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com/*=vote:5000" \
-              --kubeconfig kubeconfig
-          fi
+        else     
+          kubectl create ingress result-${{ github.event.number }} \
+            --class=nginx \
+            --rule="pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com/*=result:5001" \
+            --kubeconfig kubeconfig
+        fi
 
-          if kubectl get ingress result-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
-            echo "Ingress result-${{ github.event.number }} already exists"
-
-          else     
-            kubectl create ingress result-${{ github.event.number }} \
-              --class=nginx \
-              --rule="pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com/*=result:5001" \
-              --kubeconfig kubeconfig
-          fi
-
-          echo "Access the vote endpoint at \`pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
-          echo "Access the result endpoint at \`pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
+        echo "Access the vote endpoint at \`pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
+        echo "Access the result endpoint at \`pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
+      
