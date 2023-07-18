@@ -14,7 +14,7 @@ jobs:
   build-vote:
     name: Build and Push `vote`
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' || github.event.action != 'closed' }}
+    if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
     outputs:
       tags: ${{ steps.meta.outputs.tags }}
     steps:
@@ -42,7 +42,7 @@ jobs:
   build-worker:
     name: Build and Push `worker`
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' || github.event.action != 'closed' }}
+    if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
     outputs:
       tags: ${{ steps.meta.outputs.tags }}
     steps:
@@ -70,7 +70,7 @@ jobs:
   build-result:
     name: Build and Push `result`
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' || github.event.action != 'closed' }}
+    if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
     outputs:
       tags: ${{ steps.meta.outputs.tags }}
     steps:
@@ -194,6 +194,7 @@ jobs:
           Access the result endpoint at https://pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com
 
         edit-mode: replace
+
   uffizzi-cluster-delete: 
     if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' }}
     runs-on: ubuntu-latest
