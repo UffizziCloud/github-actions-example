@@ -211,7 +211,7 @@ jobs:
       if: ${{ github.event.action == 'closed' }}
       with:
         comment-id: ${{ steps.find-comment.outputs.comment-id }}
-        issue-number: ${{ env.PR_NUMBER }}
+        issue-number: pr-${{ github.event.pull_request.number }}
         body: |
           Uffizzi Cluster `pr-${{ github.event.pull_request.number }}` was deleted.
         edit-mode: replace
