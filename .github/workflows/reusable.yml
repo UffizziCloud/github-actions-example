@@ -5,6 +5,8 @@ on:
     types: [opened,reopened,synchronize,closed]
 
 permissions:
+  contents: read
+  pull-requests: write
   id-token: write
 
 jobs:
@@ -92,60 +94,120 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           context: ./result
 
-  # Job to create a uCluster
-  cluster-setup:
-    name: Setup ucluster
-    uses: UffizziCloud/cluster-action/.github/workflows/reusable.yaml@main
-    permissions:
-      contents: read
-      pull-requests: write
-      id-token: write
-
-  # Job to apply manifests to deploy the example-voting-app
-  apply-manifests: 
-    runs-on: ubuntu-latest
+  uffizzi-cluster: 
     needs:
-      - build-vote
-      - build-worker
-      - build-result
-      - cluster-setup
+    - build-vote
+    - build-worker
+    - build-result
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    - name: Checkout
+      if: ${{ github.event.action != 'closed' }}
+      uses: actions/checkout@v3
 
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: my-artifact
+    # Identify comment to be updated
+    - name: Find comment for deployment URL
+      uses: peter-evans/find-comment@v2
+      id: find-comment
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: "github-actions[bot]"
+        body-includes: pr-${{ github.event.pull_request.number }}
+        direction: last
 
-      - name: Kustomize and apply
-        run: |
+    # Create/Update comment with action deployment status
+    - name: Create or Update Comment with Deployment Notification
+      id: notification
+      uses: peter-evans/create-or-update-comment@v2
+      if: ${{ github.event.action != 'closed' }}
+      with:
+        comment-id: ${{ steps.find-comment.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          ## Uffizzi Ephemeral Cluster Environment Deploying
 
-          kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
-          kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
-          kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
+          :cloud: ${{ env.EXPECTED_URL }}
 
-          kustomize build . | kubectl apply --kubeconfig kubeconfig -f -
+          :gear: Updating now by workflow run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
 
-          if kubectl get ingress vote-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
-            echo "Ingress vote-${{ github.event.number }} already exists"
+          ${{ inputs.description }}
+        edit-mode: replace
+  
+    - if: ${{ github.event.action != 'closed' }}
+      name: Setup ucluster
+      uses: UffizziCloud/cluster-action@main
+      with:
+        action: create
+        cluster-name: pr-${{ github.event.pull_request.number }}
+        server: https://app.uffizzi.com
 
-          else
-            kubectl create ingress vote-${{ github.event.number }} \
-              --class=nginx \
-              --rule="pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com/*=vote:5000" \
-              --kubeconfig kubeconfig
-          fi
+    - name: Create or Update Comment with Deployment URL
+      uses: peter-evans/create-or-update-comment@v2
+      if: ${{ github.event.action != 'closed' }}
+      with:
+        comment-id: ${{ steps.notification.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          ## Uffizzi Ephemeral Cluster Environment
 
-          if kubectl get ingress result-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
-            echo "Ingress result-${{ github.event.number }} already exists"
+          Your cluster `pr-${{ github.event.pull_request.number }}` was successfully created. Learn more about [Uffizzi virtual clusters](https://docs.uffizzi.com/virtual-clusters)
+          To connect to this cluster, follow these steps:
 
-          else     
-            kubectl create ingress result-${{ github.event.number }} \
-              --class=nginx \
-              --rule="pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com/*=result:5001" \
-              --kubeconfig kubeconfig
-          fi
+          1. Download and install the Uffizzi CLI
+          2. Login to Uffizzi: `uffizzi login`
+          3. Update your kubeconfig: `uffizzi cluster update-kubeconfig --name pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]` , replacing `[KUBECONFIG]` with the path to your kubeconfig file.
+          After updating your kubeconfig, you can manage your cluster with `kubectl`
+        edit-mode: replace
 
-          echo "Access the vote endpoint at \`pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
-          echo "Access the result endpoint at \`pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
+    - if: ${{ github.event_name != 'pull_request' || github.event.action == 'closed' }}
+      name: Delete ucluster
+      uses: UffizziCloud/cluster-action@main
+      with:
+        action: delete
+        cluster-name: pr-${{ github.event.pull_request.number }}
+        server: https://app.uffizzi.com
+
+    - name: Update Comment with Deletion
+      uses: peter-evans/create-or-update-comment@v2
+      if: ${{ github.event_name != 'pull_request' || github.event.action == 'closed' }}
+      with:
+        comment-id: ${{ steps.find-comment.outputs.comment-id }}
+        issue-number: ${{ env.PR_NUMBER }}
+        body: |
+          Uffizzi Cluster `pr-${{ github.event.pull_request.number }}` was deleted.
+        edit-mode: replace
+
+    - name: Kustomize and apply
+      if: ${{ github.event.action != 'closed' }}
+      run: |
+        kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
+        kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
+        kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
+        echo "`pwd`"
+        echo "`ls`"
+        kustomize build . | kubectl apply --kubeconfig ./kubeconfig -f -
+
+        if kubectl get ingress vote-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
+          echo "Ingress vote-${{ github.event.number }} already exists"
+
+        else
+          kubectl create ingress vote-${{ github.event.number }} \
+            --class=nginx \
+            --rule="pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com/*=vote:5000" \
+            --kubeconfig kubeconfig
+        fi
+
+        if kubectl get ingress result-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
+          echo "Ingress result-${{ github.event.number }} already exists"
+
+        else     
+          kubectl create ingress result-${{ github.event.number }} \
+            --class=nginx \
+            --rule="pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com/*=result:5001" \
+            --kubeconfig kubeconfig
+        fi
+
+        echo "Access the vote endpoint at \`pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
+        echo "Access the result endpoint at \`pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
+      
