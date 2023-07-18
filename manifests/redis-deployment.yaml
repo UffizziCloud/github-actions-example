@@ -25,4 +25,16 @@ spec:
           name: redis-data
       volumes:
       - name: redis-data
-        emptyDir: {} 
+        persistentVolumeClaim:
+          claimName: redis-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
