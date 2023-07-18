@@ -1,4 +1,4 @@
-# Uffizzi Quickstart for Kubernetes (~ 1 minute)
+# Uffizzi Quickstart for Kubernetes (~ 1 minute) try
 
 Go from pull request to Uffizzi Ephemeral Environment in less than one minute. This quickstart will create a virtual Kubernetes cluster on Uffizzi Cloud and deploy a sample microservices application from this repository. Once created, you can connect to the cluster with the Uffizzi CLI, then manage the cluster via `kubectl`, `kustomize`, `helm`, and other tools. You can clean up the cluster by closing the pull request or manually deleting it via the Uffizzi CLI.
 
