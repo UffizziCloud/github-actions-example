@@ -123,9 +123,9 @@ jobs:
         comment-id: ${{ steps.find-comment.outputs.comment-id }}
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          ## Uffizzi Ephemeral Cluster Environment Deploying
-
-          :cloud: ${{ env.EXPECTED_URL }}
+          ## Uffizzi Ephemeral Environment - Virtual Cluster
+          
+          :cloud: deploying ...
 
           :gear: Updating now by workflow run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
 
@@ -139,23 +139,6 @@ jobs:
         action: create
         cluster-name: pr-${{ github.event.pull_request.number }}
         server: https://app.uffizzi.com
-
-    - name: Create or Update Comment with Deployment URL
-      uses: peter-evans/create-or-update-comment@v2
-      with:
-        comment-id: ${{ steps.notification.outputs.comment-id }}
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          ## Uffizzi Ephemeral Cluster Environment
-
-          Your cluster `pr-${{ github.event.pull_request.number }}` was successfully created. Learn more about [Uffizzi virtual clusters](https://docs.uffizzi.com/virtual-clusters)
-          To connect to this cluster, follow these steps:
-
-          1. Download and install the Uffizzi CLI
-          2. Login to Uffizzi: `uffizzi login`
-          3. Update your kubeconfig: `uffizzi cluster update-kubeconfig --name pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]` , replacing `[KUBECONFIG]` with the path to your kubeconfig file.
-          After updating your kubeconfig, you can manage your cluster with `kubectl`
-        edit-mode: replace
 
     - name: Kustomize and apply
       run: |
@@ -189,7 +172,26 @@ jobs:
         echo "Access the vote endpoint at \`pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
         echo "Access the result endpoint at \`pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
       
-    
+    - name: Create or Update Comment with Deployment URL
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        comment-id: ${{ steps.notification.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          ## Uffizzi Ephemeral Environment - Virtual Cluster
+
+          Your cluster `pr-${{ github.event.pull_request.number }}` was successfully created. Learn more about [Uffizzi virtual clusters](https://docs.uffizzi.com/virtual-clusters)
+          To connect to this cluster, follow these steps:
+
+          1. Download and install the Uffizzi CLI
+          2. Login to Uffizzi: `uffizzi login`
+          3. Update your kubeconfig: `uffizzi cluster update-kubeconfig --name pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]` , replacing `[KUBECONFIG]` with the path to your kubeconfig file.
+          After updating your kubeconfig, you can manage your cluster with `kubectl`
+
+          Access the vote endpoint at pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com.
+          Access the result endpoint at pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com.
+
+        edit-mode: replace
   uffizzi-cluster-delete: 
     if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' }}
     runs-on: ubuntu-latest
