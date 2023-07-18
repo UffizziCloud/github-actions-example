@@ -105,7 +105,17 @@ jobs:
     - name: Checkout
       if: ${{ github.event.action != 'closed' }}
       uses: actions/checkout@v3
-      
+
+    # Identify comment to be updated
+    - name: Find comment for deployment URL
+      uses: peter-evans/find-comment@v2
+      id: find-comment
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: "github-actions[bot]"
+        body-includes: pr-${{ github.event.pull_request.number }}
+        direction: last
+
     # Create/Update comment with action deployment status
     - name: Create or Update Comment with Deployment Notification
       id: notification
