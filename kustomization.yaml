@@ -2,8 +2,10 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - manifests/db-deployment.yaml
+- manifests/db-persistentvolumeclaim.yaml
 - manifests/db-service.yaml
 - manifests/redis-deployment.yaml
+- manifests/redis-persistentvolumeclaim.yaml
 - manifests/redis-service.yaml
 - manifests/result-deployment.yaml
 - manifests/result-service.yaml
