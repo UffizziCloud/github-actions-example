@@ -32,14 +32,3 @@ spec:
       - name: db-data
         persistentVolumeClaim:
           claimName: db-pv-claim
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: db-pv-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi

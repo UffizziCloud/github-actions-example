@@ -27,14 +27,3 @@ spec:
       - name: redis-data
         persistentVolumeClaim:
           claimName: redis-pv-claim
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: redis-pv-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
