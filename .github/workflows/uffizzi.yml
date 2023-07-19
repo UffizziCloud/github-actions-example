@@ -146,7 +146,7 @@ jobs:
         kustomize edit set image dockersamples/examplevotingapp_result=${{ needs.build-result.outputs.tags }}
         kustomize edit set image dockersamples/examplevotingapp_worker=${{ needs.build-worker.outputs.tags }}
 
-        if [[ ${RUNNER_DEBUG} == 1 ]]
+        if [[ ${RUNNER_DEBUG} == 1 ]]; then
           cat kustomization.yaml
           echo "`pwd`"
           echo "`ls`"
@@ -174,7 +174,7 @@ jobs:
             --kubeconfig kubeconfig
         fi
 
-        if [[ ${RUNNER_DEBUG} == 1 ]]
+        if [[ ${RUNNER_DEBUG} == 1 ]]; then
           kubectl get all --kubeconfig ./kubeconfig
         fi
 
