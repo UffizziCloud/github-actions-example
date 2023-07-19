@@ -26,20 +26,9 @@ spec:
         - containerPort: 5432
           name: postgres
         volumeMounts:
-        - mountPath: /var/lib/postgresql/data
+        - mountPath: /var/lib/postgresql
           name: db-data
       volumes:
       - name: db-data
         persistentVolumeClaim:
           claimName: db-pv-claim
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: db-pv-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi

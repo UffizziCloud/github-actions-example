@@ -12,7 +12,7 @@ permissions:
 jobs:
   # Job to build-push vote image
   build-vote:
-    name: Build and Push `vote`
+    name: Build and Push `vote` Image
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
     outputs:
@@ -40,7 +40,7 @@ jobs:
 
   # Job to build-push worker image
   build-worker:
-    name: Build and Push `worker`
+    name: Build and Push `worker` Image
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
     outputs:
@@ -68,7 +68,7 @@ jobs:
 
   # Job to build-push result image
   build-result:
-    name: Build and Push `result`
+    name: Build and Push `result` Image
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
     outputs:
@@ -94,7 +94,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           context: ./result
 
-  uffizzi-cluster-setup: 
+  uffizzi-cluster:
+    name: Deploy to Uffizzi Virtual Cluster
     needs:
     - build-vote
     - build-worker
@@ -106,7 +107,7 @@ jobs:
       uses: actions/checkout@v3
 
     # Identify comment to be updated
-    - name: Find comment for deployment URL
+    - name: Find comment for Ephemeral Environment
       uses: peter-evans/find-comment@v2
       id: find-comment
       with:
@@ -132,47 +133,59 @@ jobs:
           Download the Uffizzi CLI to interact with the upcoming virtual cluster
           https://docs.uffizzi.com/install
         edit-mode: replace
-  
-    - if: ${{ github.event.action != 'closed' }}
-      name: Setup ucluster
+
+    - name: Connect to Virtual Cluster
       uses: UffizziCloud/cluster-action@main
       with:
-        action: create
         cluster-name: pr-${{ github.event.pull_request.number }}
-        server: https://app.uffizzi.com
 
-    - name: Kustomize and apply
+    - name: Kustomize and Apply Manifests
       run: |
-        kustomize edit set image vote-image=${{ needs.build-vote.outputs.tags }}
-        kustomize edit set image result-image=${{ needs.build-result.outputs.tags }}
-        kustomize edit set image worker-image=${{ needs.build-worker.outputs.tags }}
-        echo "`pwd`"
-        echo "`ls`"
-        kustomize build . | kubectl apply --kubeconfig ./kubeconfig -f -
+        # Change the image name to those just built and pushed.
+        kustomize edit set image dockersamples/examplevotingapp_vote=${{ needs.build-vote.outputs.tags }}
+        kustomize edit set image dockersamples/examplevotingapp_result=${{ needs.build-result.outputs.tags }}
+        kustomize edit set image dockersamples/examplevotingapp_worker=${{ needs.build-worker.outputs.tags }}
+
+        if [[ ${RUNNER_DEBUG} == 1 ]]; then
+          cat kustomization.yaml
+          echo "`pwd`"
+          echo "`ls`"
+        fi
+
+        # Apply kustomized manifests to virtual cluster.
+        kubectl apply --kustomize . --kubeconfig ./kubeconfig
+
+        # Imperatively create Ingress resources for the two HTTP endpoints.
+        export VOTE_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.qa-gke.uffizzi.com"
+        export RESULT_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.qa-gke.uffizzi.com"
 
         if kubectl get ingress vote-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
           echo "Ingress vote-${{ github.event.number }} already exists"
-
         else
           kubectl create ingress vote-${{ github.event.number }} \
             --class=nginx \
-            --rule="pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com/*=vote:5000" \
+            --rule="${VOTE_HOST}/*=vote:5000" \
             --kubeconfig kubeconfig
         fi
 
         if kubectl get ingress result-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
           echo "Ingress result-${{ github.event.number }} already exists"
-
-        else     
+        else
           kubectl create ingress result-${{ github.event.number }} \
             --class=nginx \
-            --rule="pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com/*=result:5001" \
+            --rule="${RESULT_HOST}/*=result:5001" \
             --kubeconfig kubeconfig
         fi
 
-        echo "Access the vote endpoint at \`pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
-        echo "Access the result endpoint at \`pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com\`." | tee --append $GITHUB_STEP_SUMMARY
-      
+        if [[ ${RUNNER_DEBUG} == 1 ]]; then
+          kubectl get all --kubeconfig ./kubeconfig
+        fi
+
+        echo "Access the vote endpoint at https://${VOTE_HOST}"
+        echo "Access the result endpoint at https://${RESULT_HOST}"
+        echo "Access the \`vote\` endpoint at [\`${VOTE_HOST}\`.](https://${VOTE_HOST})" >> $GITHUB_STEP_SUMMARY
+        echo "Access the \`result\` endpoint at [\`${RESULT_HOST}\`](${RESULT_HOST})." >> $GITHUB_STEP_SUMMARY
+
     - name: Create or Update Comment with Deployment URL
       uses: peter-evans/create-or-update-comment@v2
       with:
@@ -186,29 +199,28 @@ jobs:
 
           1. Download and install the Uffizzi CLI from https://docs.uffizzi.com/install
           2. Login to Uffizzi: `uffizzi login`
-          3a. Update your kubeconfig: `uffizzi cluster update-kubeconfig --name pr-${{ github.event.pull_request.number }}`. This command will update your local kubeconfig. 
+          3a. Update your kubeconfig: `uffizzi cluster update-kubeconfig --name pr-${{ github.event.pull_request.number }}`. This command will update your local `~/.kube/config`.
           If you want to provide an alternate location follow 3b (the next step) instead.
           3b. Update your kubeconfig: `uffizzi cluster update-kubeconfig --name pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]`, replacing `[KUBECONFIG]` with the path to your kubeconfig file.
-          After updating your kubeconfig, you can manage your cluster with `kubectl`.
+          After updating your kubeconfig, you can manage your cluster with `kubectl`, `kustomize`, `helm`, and other tools that use kubeconfig files: `kubectl get namespace --kubeconfig [KUBECONFIG]`
 
           Access the vote endpoint at https://pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com
           Access the result endpoint at https://pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com
 
         edit-mode: replace
 
-  uffizzi-cluster-delete: 
+  uffizzi-cluster-delete:
     if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' }}
     runs-on: ubuntu-latest
     steps:
-    - name: Delete ucluster
+    - name: Delete Virtual Cluster
       uses: UffizziCloud/cluster-action@main
       with:
         action: delete
         cluster-name: pr-${{ github.event.pull_request.number }}
-        server: https://app.uffizzi.com
 
     # Identify comment to be updated
-    - name: Find comment for deployment URL
+    - name: Find comment for Ephemeral Environment
       uses: peter-evans/find-comment@v2
       id: find-comment
       with:
@@ -219,7 +231,6 @@ jobs:
 
     - name: Update Comment with Deletion
       uses: peter-evans/create-or-update-comment@v2
-      if: ${{ github.event.action == 'closed' }}
       with:
         comment-id: ${{ steps.find-comment.outputs.comment-id }}
         issue-number: ${{ github.event.pull_request.number }}
