@@ -156,8 +156,8 @@ jobs:
         kubectl apply --kustomize . --kubeconfig ./kubeconfig
 
         # Imperatively create Ingress resources for the two HTTP endpoints.
-        export VOTE_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.qa-gke.uffizzi.com"
-        export RESULT_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.qa-gke.uffizzi.com"
+        export VOTE_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.uffizzi.com"
+        export RESULT_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.uffizzi.com"
 
         if kubectl get ingress vote-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
           echo "Ingress vote-${{ github.event.number }} already exists"
