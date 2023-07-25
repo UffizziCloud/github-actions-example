@@ -23,13 +23,13 @@ If you try to open a PR for `UffizziCloud/tree/main` ← `your-account/tree/try-
 ### 4. View cluster details
 Once the action is finished running, check the pull request comments section to find information on how to access the newly created cluster.
 
-<img src="https://github.com/UffizziCloud/quickstart-k8s/blob/readme/images/comment.png" width="800">
+<img src="misc/images/comment.png" width="800">
 
 ### 5. Access the `vote` and `result` HTTP services
 
 Additionally, the app endpoints can be found on the action summary page. Under the Actions section of the forked repository, open up the latest completed action. Within the completed action, open up the summary section. Copy and paste the vote and result endpoints within the action summary
 
-<img src="https://github.com/UffizziCloud/quickstart-k8s/blob/readme/images/quickstartss.png" width="800">
+<img src="misc/images/quickstartss.png" width="800">
 
 ___
 ## What to expect
