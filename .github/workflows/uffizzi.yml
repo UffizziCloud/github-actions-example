@@ -135,7 +135,7 @@ jobs:
         edit-mode: replace
 
     - name: Connect to Virtual Cluster
-      uses: UffizziCloud/cluster-action@main
+      uses: UffizziCloud/cluster-action@prod
       with:
         cluster-name: pr-${{ github.event.pull_request.number }}
 
@@ -214,7 +214,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Delete Virtual Cluster
-      uses: UffizziCloud/cluster-action@main
+      uses: UffizziCloud/cluster-action@prod
       with:
         action: delete
         cluster-name: pr-${{ github.event.pull_request.number }}
