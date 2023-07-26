@@ -135,7 +135,7 @@ jobs:
         edit-mode: replace
 
     - name: Connect to Virtual Cluster
-      uses: UffizziCloud/cluster-action@prod
+      uses: UffizziCloud/cluster-action@main
       with:
         cluster-name: pr-${{ github.event.pull_request.number }}
 
@@ -204,8 +204,8 @@ jobs:
           3b. Update your kubeconfig: `uffizzi cluster update-kubeconfig pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]`, replacing `[KUBECONFIG]` with the path to your kubeconfig file.
           After updating your kubeconfig, you can manage your cluster with `kubectl`, `kustomize`, `helm`, and other tools that use kubeconfig files: `kubectl get namespace --kubeconfig [KUBECONFIG]`
 
-          Access the vote endpoint at http://pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.qa-gke.uffizzi.com
-          Access the result endpoint at http://pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.qa-gke.uffizzi.com
+          Access the vote endpoint at http://pr-${{ github.event.number }}-vote.uclusters.app.qa-gke.uffizzi.com
+          Access the result endpoint at http://pr-${{ github.event.number }}-result.uclusters.app.qa-gke.uffizzi.com
 
         edit-mode: replace
 
@@ -214,7 +214,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Delete Virtual Cluster
-      uses: UffizziCloud/cluster-action@prod
+      uses: UffizziCloud/cluster-action@main
       with:
         action: delete
         cluster-name: pr-${{ github.event.pull_request.number }}
