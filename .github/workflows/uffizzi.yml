@@ -183,7 +183,7 @@ jobs:
 
         echo "Access the vote endpoint at https://${VOTE_HOST}"
         echo "Access the result endpoint at https://${RESULT_HOST}"
-        echo "Access the \`vote\` endpoint at [\`${VOTE_HOST}\`.](${VOTE_HOST})" >> $GITHUB_STEP_SUMMARY
+        echo "Access the \`vote\` endpoint at [\`${VOTE_HOST}\`](${VOTE_HOST})" >> $GITHUB_STEP_SUMMARY
         echo "Access the \`result\` endpoint at [\`${RESULT_HOST}\`](${RESULT_HOST})" >> $GITHUB_STEP_SUMMARY
 
     - name: Create or Update Comment with Deployment URL
