@@ -156,8 +156,8 @@ jobs:
         kubectl apply --kustomize . --kubeconfig ./kubeconfig
 
         # Imperatively create Ingress resources for the two HTTP endpoints.
-        export VOTE_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.uffizzi.com"
-        export RESULT_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.uffizzi.com"
+        export VOTE_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.qa-gke.uffizzi.com"
+        export RESULT_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.qa-gke.uffizzi.com"
 
         if kubectl get ingress vote-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
           echo "Ingress vote-${{ github.event.number }} already exists"
@@ -183,8 +183,8 @@ jobs:
 
         echo "Access the vote endpoint at https://${VOTE_HOST}"
         echo "Access the result endpoint at https://${RESULT_HOST}"
-        echo "Access the \`vote\` endpoint at [\`${VOTE_HOST}\`.](https://${VOTE_HOST})" >> $GITHUB_STEP_SUMMARY
-        echo "Access the \`result\` endpoint at [\`${RESULT_HOST}\`](${RESULT_HOST})." >> $GITHUB_STEP_SUMMARY
+        echo "Access the \`vote\` endpoint at [\`${VOTE_HOST}\`](http://${VOTE_HOST})" >> $GITHUB_STEP_SUMMARY
+        echo "Access the \`result\` endpoint at [\`${RESULT_HOST}\`](http://${RESULT_HOST})" >> $GITHUB_STEP_SUMMARY
 
     - name: Create or Update Comment with Deployment URL
       uses: peter-evans/create-or-update-comment@v2
@@ -204,8 +204,8 @@ jobs:
           3b. Update your kubeconfig: `uffizzi cluster update-kubeconfig pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]`, replacing `[KUBECONFIG]` with the path to your kubeconfig file.
           After updating your kubeconfig, you can manage your cluster with `kubectl`, `kustomize`, `helm`, and other tools that use kubeconfig files: `kubectl get namespace --kubeconfig [KUBECONFIG]`
 
-          Access the vote endpoint at https://pr-${{ github.event.number }}-vote.app.qa-gke.uffizzi.com
-          Access the result endpoint at https://pr-${{ github.event.number }}-result.app.qa-gke.uffizzi.com
+          Access the vote endpoint at http://pr-${{ github.event.number }}-vote.uclusters.app.qa-gke.uffizzi.com
+          Access the result endpoint at http://pr-${{ github.event.number }}-result.uclusters.app.qa-gke.uffizzi.com
 
         edit-mode: replace
 
