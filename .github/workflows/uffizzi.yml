@@ -182,10 +182,9 @@ jobs:
           kubectl get all --kubeconfig ./kubeconfig
         fi
 
-        echo "url=${VOTE_HOST}" >> $GITHUB_OUTPUT
+        echo "vote_url=${VOTE_HOST}" >> $GITHUB_OUTPUT
+        echo "result_url=${RESULT_HOST}" >> $GITHUB_OUTPUT
 
-        echo "Access the vote endpoint at https://${VOTE_HOST}"
-        echo "Access the result endpoint at https://${RESULT_HOST}"
         echo "Access the \`vote\` endpoint at [\`${VOTE_HOST}\`](http://${VOTE_HOST})" >> $GITHUB_STEP_SUMMARY
         echo "Access the \`result\` endpoint at [\`${RESULT_HOST}\`](http://${RESULT_HOST})" >> $GITHUB_STEP_SUMMARY
 
@@ -207,12 +206,11 @@ jobs:
           3b. Update your kubeconfig: `uffizzi cluster update-kubeconfig pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]`, replacing `[KUBECONFIG]` with the path to your kubeconfig file.
           After updating your kubeconfig, you can manage your cluster with `kubectl`, `kustomize`, `helm`, and other tools that use kubeconfig files: `kubectl get namespace --kubeconfig [KUBECONFIG]`
 
-          Access the vote endpoint at http://pr-${{ github.event.number }}-vote.uclusters.app.qa-gke.uffizzi.com
-          Access the result endpoint at http://pr-${{ github.event.number }}-result.uclusters.app.qa-gke.uffizzi.com
+          # Access the vote endpoint at http://pr-${{ github.event.number }}-vote.uclusters.app.qa-gke.uffizzi.com
+          # Access the result endpoint at http://pr-${{ github.event.number }}-result.uclusters.app.qa-gke.uffizzi.com
 
-          echo ${VOTE_HOST}
-          echo "hi"
-          echo ${{ steps.prev.outputs.url }}
+          Access the \`vote\` endpoint at [\`${{ steps.prev.outputs.vote_url }}\`](http://${{ steps.prev.outputs.vote_url }})
+          Access the \`result\` endpoint at [\`${{ steps.prev.outputs.result_url }}\`](http://${{ steps.prev.outputs.result_url }})
 
         edit-mode: replace
 
