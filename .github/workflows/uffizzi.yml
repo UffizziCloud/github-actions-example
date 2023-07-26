@@ -207,6 +207,9 @@ jobs:
           Access the vote endpoint at http://pr-${{ github.event.number }}-vote.uclusters.app.qa-gke.uffizzi.com
           Access the result endpoint at http://pr-${{ github.event.number }}-result.uclusters.app.qa-gke.uffizzi.com
 
+          echo ${VOTE_HOST}
+          echo "hi"
+
         edit-mode: replace
 
   uffizzi-cluster-delete:
