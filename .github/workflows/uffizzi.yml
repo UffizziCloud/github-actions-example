@@ -206,11 +206,8 @@ jobs:
           3b. Update your kubeconfig: `uffizzi cluster update-kubeconfig pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]`, replacing `[KUBECONFIG]` with the path to your kubeconfig file.
           After updating your kubeconfig, you can manage your cluster with `kubectl`, `kustomize`, `helm`, and other tools that use kubeconfig files: `kubectl get namespace --kubeconfig [KUBECONFIG]`
 
-          # Access the vote endpoint at http://pr-${{ github.event.number }}-vote.uclusters.app.qa-gke.uffizzi.com
-          # Access the result endpoint at http://pr-${{ github.event.number }}-result.uclusters.app.qa-gke.uffizzi.com
-
-          Access the \`vote\` endpoint at [\`${{ steps.prev.outputs.vote_url }}\`](http://${{ steps.prev.outputs.vote_url }})
-          Access the \`result\` endpoint at [\`${{ steps.prev.outputs.result_url }}\`](http://${{ steps.prev.outputs.result_url }})
+          Access the `vote` endpoint at [`${{ steps.prev.outputs.vote_url }}`](http://${{ steps.prev.outputs.vote_url }})
+          Access the `result` endpoint at [`${{ steps.prev.outputs.result_url }}`](http://${{ steps.prev.outputs.result_url }})
 
         edit-mode: replace
 
