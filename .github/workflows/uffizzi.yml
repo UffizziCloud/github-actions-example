@@ -140,6 +140,7 @@ jobs:
         cluster-name: pr-${{ github.event.pull_request.number }}
 
     - name: Kustomize and Apply Manifests
+      id: prev
       run: |
         # Change the image name to those just built and pushed.
         kustomize edit set image dockersamples/examplevotingapp_vote=${{ needs.build-vote.outputs.tags }}
@@ -181,6 +182,8 @@ jobs:
           kubectl get all --kubeconfig ./kubeconfig
         fi
 
+        echo "url=${VOTE_HOST}" >> $GITHUB_OUTPUT
+
         echo "Access the vote endpoint at https://${VOTE_HOST}"
         echo "Access the result endpoint at https://${RESULT_HOST}"
         echo "Access the \`vote\` endpoint at [\`${VOTE_HOST}\`](http://${VOTE_HOST})" >> $GITHUB_STEP_SUMMARY
@@ -209,6 +212,7 @@ jobs:
 
           echo ${VOTE_HOST}
           echo "hi"
+          echo ${{ steps.prev.outputs.url }}
 
         edit-mode: replace
 
