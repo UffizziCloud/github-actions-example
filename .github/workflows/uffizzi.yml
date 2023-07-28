@@ -157,15 +157,15 @@ jobs:
         kubectl apply --kustomize . --kubeconfig ./kubeconfig
 
         # Imperatively create Ingress resources for the two HTTP endpoints.
-        export VOTE_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.qa-gke.uffizzi.com"
-        export RESULT_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.qa-gke.uffizzi.com"
+        export VOTE_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.uffizzi.com"
+        export RESULT_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.uffizzi.com"
 
         if kubectl get ingress vote-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
           echo "Ingress vote-${{ github.event.number }} already exists"
         else
           kubectl create ingress vote-${{ github.event.number }} \
             --class=nginx \
-            --rule="${VOTE_HOST}/*=vote:5000" \
+            --rule="${VOTE_HOST}/*=vote:5000,tls" \
             --kubeconfig kubeconfig
         fi
 
@@ -174,7 +174,7 @@ jobs:
         else
           kubectl create ingress result-${{ github.event.number }} \
             --class=nginx \
-            --rule="${RESULT_HOST}/*=result:5001" \
+            --rule="${RESULT_HOST}/*=result:5001,tls" \
             --kubeconfig kubeconfig
         fi
 
@@ -201,9 +201,10 @@ jobs:
 
           1. Download and install the Uffizzi CLI from https://docs.uffizzi.com/install
           2. Login to Uffizzi: `uffizzi login`
-          3a. Update your kubeconfig: `uffizzi cluster update-kubeconfig pr-${{ github.event.pull_request.number }}`. This command will update your local `~/.kube/config`.
-          If you want to provide an alternate location follow 3b (the next step) instead.
-          3b. Update your kubeconfig: `uffizzi cluster update-kubeconfig pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]`, replacing `[KUBECONFIG]` with the path to your kubeconfig file.
+          3. Update your kubeconfig: `uffizzi cluster update-kubeconfig pr-${{ github.event.pull_request.number }}`. This command will update your local `~/.kube/config`.
+          If you want to provide an alternate location follow the optional step (the next step) instead.
+
+              Optional: Update your kubeconfig: `uffizzi cluster update-kubeconfig pr-${{ github.event.pull_request.number }} --kubeconfig=[KUBECONFIG]`, replacing `[KUBECONFIG]` with the path to your kubeconfig file.
           After updating your kubeconfig, you can manage your cluster with `kubectl`, `kustomize`, `helm`, and other tools that use kubeconfig files: `kubectl get namespace --kubeconfig [KUBECONFIG]`
 
           Access the `vote` endpoint at [`${{ steps.prev.outputs.vote_url }}`](http://${{ steps.prev.outputs.vote_url }})
