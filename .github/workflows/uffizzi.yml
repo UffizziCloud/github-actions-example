@@ -157,26 +157,30 @@ jobs:
         kubectl apply --kustomize . --kubeconfig ./kubeconfig
 
         # Imperatively create Ingress resources for the two HTTP endpoints.
-        export VOTE_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.uffizzi.com"
-        export RESULT_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.uffizzi.com"
 
-        if kubectl get ingress vote-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
-          echo "Ingress vote-${{ github.event.number }} already exists"
+        if kubectl get ingress vote --kubeconfig kubeconfig >/dev/null 2>&1; then
+          echo "Ingress vote already exists"
         else
-          kubectl create ingress vote-${{ github.event.number }} \
+          kubectl create ingress vote \
             --class=nginx \
-            --rule="${VOTE_HOST}/*=vote:5000,tls" \
+            --rule="vote.example.com/*=vote:5000,tls" \
             --kubeconfig kubeconfig
         fi
 
-        if kubectl get ingress result-${{ github.event.number }} --kubeconfig kubeconfig >/dev/null 2>&1; then
-          echo "Ingress result-${{ github.event.number }} already exists"
+        if kubectl get ingress result --kubeconfig kubeconfig >/dev/null 2>&1; then
+          echo "Ingress result already exists"
         else
-          kubectl create ingress result-${{ github.event.number }} \
+          kubectl create ingress result \
             --class=nginx \
-            --rule="${RESULT_HOST}/*=result:5001,tls" \
+            --rule="result.example.com/*=result:5001,tls" \
             --kubeconfig kubeconfig
         fi
+ 
+        # Give the plugin time to mutate ingress hostname
+        sleep 5
+
+        export VOTE_HOST=$(kubectl get ingress vote --kubeconfig kubeconfig -o json | jq '.spec.rules[0].host' | tr -d '"')
+        export RESULT_HOST=$(kubectl get ingress result --kubeconfig kubeconfig -o json | jq '.spec.rules[0].host' | tr -d '"')
 
         if [[ ${RUNNER_DEBUG} == 1 ]]; then
           kubectl get all --kubeconfig ./kubeconfig
