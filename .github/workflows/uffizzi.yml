@@ -157,15 +157,15 @@ jobs:
         kubectl apply --kustomize . --kubeconfig ./kubeconfig
 
         # Imperatively create Ingress resources for the two HTTP endpoints.
-        export VOTE_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.uffizzi.com"
-        export RESULT_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.uffizzi.com"
+        # export VOTE_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-vote.uclusters.app.uffizzi.com"
+        # export RESULT_HOST="pr-${{ github.event.number }}-${GITHUB_REPOSITORY_ID}-result.uclusters.app.uffizzi.com"
 
         if kubectl get ingress vote --kubeconfig kubeconfig >/dev/null 2>&1; then
           echo "Ingress vote already exists"
         else
           kubectl create ingress vote \
             --class=nginx \
-            --rule="${VOTE_HOST}/*=vote:5000,tls" \
+            --rule="vote.example.com/*=vote:5000,tls" \
             --kubeconfig kubeconfig
         fi
 
@@ -174,7 +174,7 @@ jobs:
         else
           kubectl create ingress result \
             --class=nginx \
-            --rule="${RESULT_HOST}/*=result:5001,tls" \
+            --rule="result.example.com/*=result:5001,tls" \
             --kubeconfig kubeconfig
         fi
  
@@ -183,7 +183,7 @@ jobs:
 
         export VOTE_HOST=$(kubectl get ingress vote --kubeconfig kubeconfig -o json | jq '.spec.rules[0].host')
         export RESULT_HOST=$(kubectl get ingress result --kubeconfig kubeconfig -o json | jq '.spec.rules[0].host')
-
+        
         if [[ ${RUNNER_DEBUG} == 1 ]]; then
           kubectl get all --kubeconfig ./kubeconfig
         fi
