@@ -178,11 +178,11 @@ jobs:
             --kubeconfig kubeconfig
         fi
  
-	# Give the plugin time to mutate ingress hostname
-	sleep 5
+        # Give the plugin time to mutate ingress hostname
+        sleep 5
 
-	export VOTE_HOST=$(kubectl get ingress vote --kubeconfig kubeconfig -o json | jq '.spec.rules[0].host')
-	export RESULT_HOST=$(kubectl get ingress result --kubeconfig kubeconfig -o json | jq '.spec.rules[0].host')
+        export VOTE_HOST=$(kubectl get ingress vote --kubeconfig kubeconfig -o json | jq '.spec.rules[0].host')
+        export RESULT_HOST=$(kubectl get ingress result --kubeconfig kubeconfig -o json | jq '.spec.rules[0].host')
 
         if [[ ${RUNNER_DEBUG} == 1 ]]; then
           kubectl get all --kubeconfig ./kubeconfig
