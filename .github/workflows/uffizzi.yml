@@ -156,29 +156,10 @@ jobs:
         # Apply kustomized manifests to virtual cluster.
         kubectl apply --kustomize . --kubeconfig ./kubeconfig
 
-        # Imperatively create Ingress resources for the two HTTP endpoints.
-
-        if kubectl get ingress vote --kubeconfig kubeconfig >/dev/null 2>&1; then
-          echo "Ingress vote already exists"
-        else
-          kubectl create ingress vote \
-            --class=nginx \
-            --rule="vote.example.com/*=vote:5000,tls" \
-            --kubeconfig kubeconfig
-        fi
-
-        if kubectl get ingress result --kubeconfig kubeconfig >/dev/null 2>&1; then
-          echo "Ingress result already exists"
-        else
-          kubectl create ingress result \
-            --class=nginx \
-            --rule="result.example.com/*=result:5001,tls" \
-            --kubeconfig kubeconfig
-        fi
- 
-        # Give the plugin time to mutate ingress hostname
+        # Allow uffizzi to sync the resources
         sleep 5
 
+        # Get the hostnames assigned by uffizzi
         export VOTE_HOST=$(kubectl get ingress vote --kubeconfig kubeconfig -o json | jq '.spec.rules[0].host' | tr -d '"')
         export RESULT_HOST=$(kubectl get ingress result --kubeconfig kubeconfig -o json | jq '.spec.rules[0].host' | tr -d '"')
 

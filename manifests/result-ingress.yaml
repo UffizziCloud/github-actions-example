@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: result
+spec:
+  ingressClassName: uffizzi
+  rules:
+  - host: result.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: result
+            port:
+              number: 5001
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - result.example.com
