@@ -12,7 +12,7 @@ spec:
           service:
             name: vote
             port:
-              number: 5001
+              number: 5000
         path: /
         pathType: Prefix
   tls:
