@@ -12,3 +12,5 @@ resources:
 - manifests/vote-deployment.yaml
 - manifests/vote-service.yaml
 - manifests/worker-deployment.yaml
+- manifests/result-ingress.yaml
+- manifests/vote-ingress.yaml
