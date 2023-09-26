@@ -138,7 +138,7 @@ jobs:
       uses: UffizziCloud/cluster-action@main
       with:
         cluster-name: pr-${{ github.event.pull_request.number }}
-        server: https://pr-1221-deployment-36719-uffizzi-platform.app.uffizzi.com
+        server: https://pr-1221-deployment-36892-uffizzi-platform.app.uffizzi.com
 
     - name: Kustomize and Apply Manifests
       id: prev
@@ -207,7 +207,7 @@ jobs:
       with:
         action: delete
         cluster-name: pr-${{ github.event.pull_request.number }}
-        server: https://pr-1221-deployment-36719-uffizzi-platform.app.uffizzi.com
+        server: https://pr-1221-deployment-36892-uffizzi-platform.app.uffizzi.com
 
     # Identify comment to be updated
     - name: Find comment for Ephemeral Environment
