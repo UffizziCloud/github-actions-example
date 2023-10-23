@@ -139,6 +139,7 @@ jobs:
       with:
         cluster-name: pr-${{ github.event.pull_request.number }}
         server: https://app.uffizzi.com
+        image: uffizzi/cli:pr-350
 
     - name: Kustomize and Apply Manifests
       id: prev
